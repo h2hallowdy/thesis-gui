@@ -3,9 +3,13 @@ This gui is written by python...
 
 ## Program information
 Name:             Testing the tool
+
 Purpose:          Label object bboxes for ImageNet Detection data
+
 Author:           Nguyen, Xuan Hoang
+
 Created:          Thursday Feb 7
+
 Tools:            Python, pyqt, qtDesigner
 
 
