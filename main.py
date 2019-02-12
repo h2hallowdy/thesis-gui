@@ -10,12 +10,12 @@ import glob
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-def Remove(duplicate): 
-    final_list = [] 
-    for num in duplicate: 
-        if num not in final_list: 
-            final_list.append(num) 
-    return final_list 
+def Remove(duplicate):
+    final_list = []
+    for num in duplicate:
+        if num not in final_list:
+            final_list.append(num)
+    return final_list
 
 
 class Ui_MainWindow(object):
@@ -23,9 +23,9 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(711, 410)
 
-        #Initialize global
+        # Initialize global
         self.imageDir = ''
-        self.imageList= []
+        self.imageList = []
         self.outDir = ''
         self.xmlDir = ''
         self.cur = 0
@@ -39,7 +39,24 @@ class Ui_MainWindow(object):
         self.numbers = False
         self.boxcount = 0
 
-        #Initialize main windows
+        # reference to bbox
+        self.bboxIdList = []
+        self.bboxId = 0
+        self.bboxList = []
+        self.bboxNumberList = []
+        self.hl = None
+        self.vl = None
+
+        # initialize states
+        self.STATE = {}
+        self.STATE['click'] = 0
+        self.STATE['itemClick'] = 0
+        self.STATE['x'], self.STATE['y'] = 0, 0
+        self.itemSelected = None
+        self.qItemSelected = None
+        
+
+        # Initialize main windows
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -107,6 +124,10 @@ class Ui_MainWindow(object):
         self.loadBtn.clicked.connect(self.loadDir)
         self.prevBtn.clicked.connect(self.prevImage)
         self.nextBtn.clicked.connect(self.nextImage)
+        self.delBtn.clicked.connect(self.delItem)
+        self.clearBtn.clicked.connect(self.clearAll)
+        self.listBBox.clicked.connect(self.itemSelect)
+        self.imgFrame.mousePressEvent = self.mouseClick
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -125,19 +146,20 @@ class Ui_MainWindow(object):
     def loadDir(self):
         s = self.imgDir.text()
         self.category = int(s)
-        self.imageDir = os.path.join(r'./Images', '%03d' %(self.category))
+        self.imageDir = os.path.join(r'./Images', '%03d' % (self.category))
         # dirs = os.listdir(self.imageDir)
         # for file in dirs:
         #     print(file)
         extensions = ("*.jpg", "*.jpeg", "*.JPG", "*.JPEG")
         for extension in extensions:
-            self.imageList.extend(glob.glob(os.path.join(self.imageDir, extension)))
+            self.imageList.extend(
+                glob.glob(os.path.join(self.imageDir, extension)))
             self.imageList = Remove(self.imageList)
         if len(self.imageList) == 0:
             print('No .JPEG images found in the specified dir!')
             return
         # for debugging
-        # print('We have found', '%d' %(len(self.imageList)), 'images') 
+        # print('We have found', '%d' %(len(self.imageList)), 'images')
         # for image in self.imageList:
         #     print(image)
 
@@ -146,22 +168,26 @@ class Ui_MainWindow(object):
         self.total = len(self.imageList)
 
         # set up output dir
-        self.outDir = os.path.join(r'./Labels', '%03d' %(self.category))
-        self.xmlDir = os.path.join(r'./AnnotationsXML', '%03d' %(self.category))
+        self.outDir = os.path.join(r'./Labels', '%03d' % (self.category))
+        self.xmlDir = os.path.join(
+            r'./AnnotationsXML', '%03d' % (self.category))
         if not os.path.exists(self.outDir):
             os.mkdir(self.outDir)
         if not os.path.exists(self.xmlDir):
             os.mkdir(self.xmlDir)
-        
+
         self.loadImage()
-    
+
     # Load Image
     def loadImage(self):
         self.imagepath = self.imageList[self.cur - 1]
-        pixmap = QtGui.QPixmap(self.imagepath) # Setup pixmap with the provided image
-        pixmap = pixmap.scaled(self.imgFrame.width(), self.imgFrame.height(), QtCore.Qt.KeepAspectRatio) # Scale pixmap
-        self.imgFrame.setPixmap(pixmap) # Set the pixmap onto the label
-        self.imgFrame.setAlignment(QtCore.Qt.AlignCenter) # Align the label to center
+        # Setup pixmap with the provided image
+        pixmap = QtGui.QPixmap(self.imagepath)
+        pixmap = pixmap.scaled(self.imgFrame.width(), self.imgFrame.height(
+        ), QtCore.Qt.KeepAspectRatio)  # Scale pixmap
+        self.imgFrame.setPixmap(pixmap)  # Set the pixmap onto the label
+        # Align the label to center
+        self.imgFrame.setAlignment(QtCore.Qt.AlignCenter)
         # Current / Total
         self.currValue.setText(str(self.cur))
         self.totalValue.setText(str(self.total))
@@ -179,6 +205,68 @@ class Ui_MainWindow(object):
         if self.cur < self.total:
             self.cur += 1
             self.loadImage()
+
+    # Clear button
+    def clearAll(self):
+        self.bboxList = []
+        model = QtGui.QStandardItemModel().clear()
+        self.listBBox.setModel(model)
+
+    # Delete button
+    def delItem(self):
+        if self.STATE['itemClick'] == 1:
+            # row = self.bboxList[self.itemSelected]
+            
+            # model = QtGui.QStandardItemModel().removeRow()
+            # # self.listBBox.setModel(model)
+            self.bboxIdList.pop(self.itemSelected)
+            self.bboxList.pop(self.itemSelected)
+            print(self.bboxIdList, self.bboxList)
+            
+
+
+    # List View Selection
+    def itemSelect(self, qindex):
+        # for debugging
+        # print(qindex.row())
+        self.STATE['itemClick'] = 1
+        self.qItemSelected = qindex
+        self.itemSelected = qindex.row()
+        print(self.itemSelected)
+
+    # Mouse click event
+    def mouseClick(self, event):
+        xq = event.pos().x()
+        yq = event.pos().y()
+        x = int(xq)
+        y = int(yq)
+        if self.STATE['click'] == 0:
+            self.STATE['x'], self.STATE['y'] = x, y
+        else:
+            x1, x2 = min(self.STATE['x'], x), max(self.STATE['x'], x)
+            y1, y2 = min(self.STATE['y'], y), max(self.STATE['y'], y)
+            # for debugging
+            # print(x1, y1)
+            # print(x2, y2)
+            self.bboxList.append((x1, y1, x2, y2))
+            self.bboxIdList.append(self.bboxId)
+            self.bboxId = self.bboxId + 1
+            
+            # print(self.bboxIdList, self.bboxId)
+            self.boxcount = self.boxcount + 1
+            self.render()
+        self.STATE['click'] = 1 - self.STATE['click']
+        # for debugging
+        # print('STATE NOW:', str(self.STATE['click']))
+
+    def render(self):
+        model = QtGui.QStandardItemModel()
+        if (len(self.bboxList) != 0):
+            self.listBBox.setModel(model)
+            for val in self.bboxList:
+                item = QtGui.QStandardItem(str(val))
+                model.appendRow(item)
+
 
 if __name__ == "__main__":
     import sys
