@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 import os
 import glob
+from PIL import Image, ImageTk
+from xml_util import createXMLAnnotation
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -21,7 +23,7 @@ def Remove(duplicate):
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(711, 410)
+        MainWindow.resize(711, 416)
 
         # Initialize global
         self.imageDir = ''
@@ -108,6 +110,20 @@ class Ui_MainWindow(object):
         self.imgFrame.setFrameShape(QtWidgets.QFrame.Box)
         self.imgFrame.setText("")
         self.imgFrame.setObjectName("imgFrame")
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setGeometry(QtCore.QRect(380, 360, 61, 16))
+        self.label_6.setObjectName("label_6")
+        self.xVal = QtWidgets.QLabel(self.centralwidget)
+        self.xVal.setGeometry(QtCore.QRect(460, 360, 47, 13))
+        self.xVal.setText("")
+        self.xVal.setObjectName("xVal")
+        self.label_8 = QtWidgets.QLabel(self.centralwidget)
+        self.label_8.setGeometry(QtCore.QRect(510, 360, 16, 16))
+        self.label_8.setObjectName("label_8")
+        self.yVal = QtWidgets.QLabel(self.centralwidget)
+        self.yVal.setGeometry(QtCore.QRect(520, 360, 47, 13))
+        self.yVal.setText("")
+        self.yVal.setObjectName("yVal")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 711, 21))
@@ -128,6 +144,7 @@ class Ui_MainWindow(object):
         self.clearBtn.clicked.connect(self.clearAll)
         self.listBBox.clicked.connect(self.itemSelect)
         self.imgFrame.mousePressEvent = self.mouseClick
+        self.imgFrame.mouseMoveEvent = self.mouseMove
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -142,6 +159,8 @@ class Ui_MainWindow(object):
         self.nextBtn.setText(_translate("MainWindow", "Next >>"))
         self.label_4.setText(_translate("MainWindow", "Progress"))
         self.label_5.setText(_translate("MainWindow", "/"))
+        self.label_6.setText(_translate("MainWindow", "Coordinates"))
+        self.label_8.setText(_translate("MainWindow", ","))
 
     def loadDir(self):
         s = self.imgDir.text()
@@ -192,16 +211,37 @@ class Ui_MainWindow(object):
         self.currValue.setText(str(self.cur))
         self.totalValue.setText(str(self.total))
 
+        # load labels
+        self.clearAll()
+        self.imagename = os.path.split(self.imagepath)[-1].split('.')[0]
+        labelname = self.imagename + '.txt'
+        xmlname = self.imagename + '.xml'
+        self.labelfilename = os.path.join(self.outDir, labelname)
+        self.xmlfilename = os.path.join(self.xmlDir, xmlname)
+
+    # Save Annotations
+    def saveImage(self):
+        with open(self.labelfilename, 'w') as f:
+            f.write('%d\n' %len(self.bboxList))
+            for bbox in self.bboxList:
+                f.write(' '.join(map(str, bbox)) + '\n')
+        im = Image.open(self.imagepath)
+        # for debugging
+        # print(im.size)
+        createXMLAnnotation(os.path.split(self.imagepath)[-1], self.bboxList, im.size, self.xmlfilename)
+        print('Image No. %d saved' %(self.cur))
+        
+
     # Prev button
     def prevImage(self):
-        # self.saveImage()
+        self.saveImage()
         if self.cur > 1:
             self.cur -= 1
             self.loadImage()
 
     # Next Button
     def nextImage(self):
-        # self.saveImage()
+        self.saveImage()
         if self.cur < self.total:
             self.cur += 1
             self.loadImage()
@@ -258,6 +298,16 @@ class Ui_MainWindow(object):
         self.STATE['click'] = 1 - self.STATE['click']
         # for debugging
         # print('STATE NOW:', str(self.STATE['click']))
+
+    # Mouse move event
+    def mouseMove(self, event):
+        xq = event.pos().x()
+        yq = event.pos().y()
+        x = int(xq)
+        y = int(yq)
+        self.xVal.setText(str(x))
+        self.yVal.setText(str(y))
+
 
     def render(self):
         model = QtGui.QStandardItemModel()
