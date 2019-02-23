@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 import os
 import glob
+import math
 from PIL import Image, ImageTk
 from xml_util import createXMLAnnotation
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -40,6 +41,7 @@ class Ui_MainWindow(object):
         self.tkimg = None
         self.numbers = False
         self.boxcount = 0
+        self.pixmap = None
 
         # reference to bbox
         self.bboxIdList = []
@@ -201,10 +203,10 @@ class Ui_MainWindow(object):
     def loadImage(self):
         self.imagepath = self.imageList[self.cur - 1]
         # Setup pixmap with the provided image
-        pixmap = QtGui.QPixmap(self.imagepath)
-        pixmap = pixmap.scaled(self.imgFrame.width(), self.imgFrame.height(
+        self.pixmap = QtGui.QPixmap(self.imagepath)
+        self.pixmap = self.pixmap.scaled(self.imgFrame.width(), self.imgFrame.height(
         ), QtCore.Qt.KeepAspectRatio)  # Scale pixmap
-        self.imgFrame.setPixmap(pixmap)  # Set the pixmap onto the label
+        self.imgFrame.setPixmap(self.pixmap)  # Set the pixmap onto the label
         # Align the label to center
         self.imgFrame.setAlignment(QtCore.Qt.AlignCenter)
         # Current / Total
@@ -231,7 +233,6 @@ class Ui_MainWindow(object):
         createXMLAnnotation(os.path.split(self.imagepath)[-1], self.bboxList, im.size, self.xmlfilename)
         print('Image No. %d saved' %(self.cur))
         
-
     # Prev button
     def prevImage(self):
         self.saveImage()
@@ -252,7 +253,7 @@ class Ui_MainWindow(object):
         model = QtGui.QStandardItemModel().clear()
         self.listBBox.setModel(model)
 
-    # Delete button
+    # Delete button -> Still need to re-render the list
     def delItem(self):
         if self.STATE['itemClick'] == 1:
             # row = self.bboxList[self.itemSelected]
@@ -263,8 +264,6 @@ class Ui_MainWindow(object):
             self.bboxList.pop(self.itemSelected)
             print(self.bboxIdList, self.bboxList)
             
-
-
     # List View Selection
     def itemSelect(self, qindex):
         # for debugging
@@ -285,6 +284,18 @@ class Ui_MainWindow(object):
         else:
             x1, x2 = min(self.STATE['x'], x), max(self.STATE['x'], x)
             y1, y2 = min(self.STATE['y'], y), max(self.STATE['y'], y)
+
+
+            # Drawing function
+            self.painterInstance = QtGui.QPainter(self.pixmap)        
+            self.penRectangle = QtGui.QPen(QtCore.Qt.red)
+            self.penRectangle.setWidth(3)
+            self.painterInstance.setPen(self.penRectangle)
+            xlen = abs(x1 - x2)
+            ylen = abs(y1 - y2)
+            self.painterInstance.drawRect(x1, y1, xlen, ylen)
+            self.imgFrame.setPixmap(self.pixmap)
+            self.imgFrame.show()
             # for debugging
             # print(x1, y1)
             # print(x2, y2)
@@ -295,6 +306,8 @@ class Ui_MainWindow(object):
             # print(self.bboxIdList, self.bboxId)
             self.boxcount = self.boxcount + 1
             self.render()
+            
+
         self.STATE['click'] = 1 - self.STATE['click']
         # for debugging
         # print('STATE NOW:', str(self.STATE['click']))
@@ -307,8 +320,8 @@ class Ui_MainWindow(object):
         y = int(yq)
         self.xVal.setText(str(x))
         self.yVal.setText(str(y))
-
-
+        
+    # Render function
     def render(self):
         model = QtGui.QStandardItemModel()
         if (len(self.bboxList) != 0):
@@ -317,6 +330,7 @@ class Ui_MainWindow(object):
                 item = QtGui.QStandardItem(str(val))
                 model.appendRow(item)
 
+    
 
 if __name__ == "__main__":
     import sys
