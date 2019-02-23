@@ -126,6 +126,9 @@ class Ui_MainWindow(object):
         self.yVal.setGeometry(QtCore.QRect(520, 360, 47, 13))
         self.yVal.setText("")
         self.yVal.setObjectName("yVal")
+        self.startBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.startBtn.setGeometry(QtCore.QRect(570, 330, 131, 23))
+        self.startBtn.setObjectName("startBtn")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 711, 21))
@@ -163,6 +166,8 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "/"))
         self.label_6.setText(_translate("MainWindow", "Coordinates"))
         self.label_8.setText(_translate("MainWindow", ","))
+        self.startBtn.setText(_translate("MainWindow", "Start"))
+
 
     def loadDir(self):
         s = self.imgDir.text()
