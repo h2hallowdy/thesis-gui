@@ -34,3 +34,8 @@ Tools:            Python, pyqt, qtDesigner
 ## UI in main GUI
     statusGB: status group box -> sttLbl: status label, configBtn: Configuration Button
     calibGB: calibration group box -> armHomeBtn, camHomeBtn, armTestBtn, camTeachBtn
+    armPosGB: arm position group box -> xCurLbl, yCurLbl, zCurLbl
+    proPosGB: product position group box -> xProLbl, yProLbl
+    controlGB: control group box -> autoBtn, manualBtn
+    processGB: process Group box -> processImgFrame
+    liveVidGB: live Cam group box -> liveVidFrame
