@@ -29,3 +29,8 @@ Tools:            Python, pyqt, qtDesigner
     If you cannot run the program, maybe your pc is not installed these python packages yet, please install 
 
     all the thing in the "import" line by pip. :)
+
+
+## UI in main GUI
+    statusGB: status group box -> sttLbl: status label, configBtn: Configuration Button
+    calibGB: calibration group box -> armHomeBtn, camHomeBtn, armTestBtn, camTeachBtn
