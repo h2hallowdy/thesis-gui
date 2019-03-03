@@ -39,3 +39,6 @@ Tools:            Python, pyqt, qtDesigner
     controlGB: control group box -> autoBtn, manualBtn
     processGB: process Group box -> processImgFrame
     liveVidGB: live Cam group box -> liveVidFrame
+
+## UI in Configuration GUI
+    confiGB: Configuration Group box -> nameLbl, baudLbl, dataSizeLbl, parityLbl, handshakeLbl, modeLbl
