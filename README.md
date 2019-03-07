@@ -41,4 +41,4 @@ Tools:            Python, pyqt, qtDesigner
     liveVidGB: live Cam group box -> liveVidFrame
 
 ## UI in Configuration GUI
-    confiGB: Configuration Group box -> nameLbl, baudLbl, dataSizeLbl, parityLbl, handshakeLbl, modeLbl
+    confiGB: Configuration Group box -> nameCb, baudCb, dataSizeCb, parityCb, handshakeCb, modeCb, openBtn, closeBtn

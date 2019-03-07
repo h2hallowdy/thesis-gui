@@ -8,12 +8,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from main import Ui_MainWindow
+from Configuration import Ui_ConfigurationUI
 
 
 class Ui_MainControllerUI(object):
     def setupUi(self, MainControllerUI):
         MainControllerUI.setObjectName("MainControllerUI")
         MainControllerUI.resize(1196, 592)
+        MainControllerUI.setWindowIcon(QtGui.QIcon('./icons/joystick.png'))
         self.centralwidget = QtWidgets.QWidget(MainControllerUI)
         self.centralwidget.setObjectName("centralwidget")
         self.statusGB = QtWidgets.QGroupBox(self.centralwidget)
@@ -52,12 +54,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(11)
         self.configBtn.setFont(font)
-        self.configBtn.setStyleSheet("background-color: orange;\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.configBtn.setStyleSheet(
+            "background-color: orange;\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.configBtn.setObjectName("configBtn")
         self.calibGB = QtWidgets.QGroupBox(self.centralwidget)
         self.calibGB.setGeometry(QtCore.QRect(940, 150, 251, 121))
@@ -74,12 +76,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(10)
         self.armHomeBtn.setFont(font)
-        self.armHomeBtn.setStyleSheet("background-color: rgb(0, 255, 0);\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.armHomeBtn.setStyleSheet(
+            "background-color: rgb(0, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.armHomeBtn.setObjectName("armHomeBtn")
         self.camHomeBtn = QtWidgets.QPushButton(self.calibGB)
         self.camHomeBtn.setGeometry(QtCore.QRect(10, 80, 111, 31))
@@ -87,12 +89,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(10)
         self.camHomeBtn.setFont(font)
-        self.camHomeBtn.setStyleSheet("background-color: rgb(0, 255, 0);\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.camHomeBtn.setStyleSheet(
+            "background-color: rgb(0, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.camHomeBtn.setObjectName("camHomeBtn")
         self.teachingCamBtn = QtWidgets.QPushButton(self.calibGB)
         self.teachingCamBtn.setGeometry(QtCore.QRect(130, 80, 111, 31))
@@ -100,13 +102,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(10)
         self.teachingCamBtn.setFont(font)
-        self.teachingCamBtn.setStyleSheet("\n"
-        "background-color: rgb(255, 255, 0);\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.teachingCamBtn.setStyleSheet(
+            "background-color: rgb(255, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.teachingCamBtn.setObjectName("teachingCamBtn")
         self.armTestingBtn = QtWidgets.QPushButton(self.calibGB)
         self.armTestingBtn.setGeometry(QtCore.QRect(130, 30, 111, 31))
@@ -114,13 +115,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(10)
         self.armTestingBtn.setFont(font)
-        self.armTestingBtn.setStyleSheet("\n"
-        "background-color: rgb(255, 255, 0);\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.armTestingBtn.setStyleSheet(
+            "background-color: rgb(255, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.armTestingBtn.setObjectName("armTestingBtn")
         self.armPosGB = QtWidgets.QGroupBox(self.centralwidget)
         self.armPosGB.setGeometry(QtCore.QRect(730, 10, 201, 131))
@@ -236,12 +236,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(11)
         self.autoBtn.setFont(font)
-        self.autoBtn.setStyleSheet("background-color: rgb(85, 255, 0);\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.autoBtn.setStyleSheet(
+            "background-color: rgb(85, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.autoBtn.setObjectName("autoBtn")
         self.armTestingBtn_2 = QtWidgets.QPushButton(self.controlGB)
         self.armTestingBtn_2.setGeometry(QtCore.QRect(250, 20, 111, 31))
@@ -249,12 +249,12 @@ class Ui_MainControllerUI(object):
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(11)
         self.armTestingBtn_2.setFont(font)
-        self.armTestingBtn_2.setStyleSheet("background-color: rgb(255, 85, 0);\n"
-        "border-style: outset;\n"
-        "border-width: 1px;\n"
-        "border-radius: 4px;\n"
-        "border-color: black;\n"
-        "")
+        self.armTestingBtn_2.setStyleSheet(
+            "background-color: rgb(255, 85, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
         self.armTestingBtn_2.setObjectName("armTestingBtn_2")
         self.processGB = QtWidgets.QGroupBox(self.centralwidget)
         self.processGB.setGeometry(QtCore.QRect(730, 360, 461, 191))
@@ -296,9 +296,14 @@ class Ui_MainControllerUI(object):
         self.retranslateUi(MainControllerUI)
         QtCore.QMetaObject.connectSlotsByName(MainControllerUI)
 
-        #Initialize callbacks and events
+        # Initialize callbacks and events
+        ## For Screens
         self.teachingCamBtn.clicked.connect(self.openWindow)
-        
+        self.configBtn.clicked.connect(self.openCongiguration)
+        ## End Screens
+        # End initialize callbacks and events
+
+
     def retranslateUi(self, MainControllerUI):
         _translate = QtCore.QCoreApplication.translate
         MainControllerUI.setWindowTitle(_translate("MainControllerUI", "Main Controller-MC"))
@@ -327,11 +332,20 @@ class Ui_MainControllerUI(object):
         self.processGB.setTitle(_translate("MainControllerUI", "Process"))
         self.liveVidGB.setTitle(_translate("MainControllerUI", "Live Cam"))
 
+    # Open main window( cam teaching window)
     def openWindow(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
+
+    # Open Configuration Ui
+    def openCongiguration(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_ConfigurationUI()
+        self.ui.setupUi(self.window)
+        self.window.show()
+
 
 if __name__ == "__main__":
     import sys
