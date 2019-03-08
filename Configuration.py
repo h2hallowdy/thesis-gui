@@ -10,9 +10,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 import serial
 
-ser = 0
 
 class Ui_ConfigurationUI(object):
+    ser = 0
+    state = False
+
     def setupUi(self, ConfigurationUI):
         ConfigurationUI.setObjectName("ConfigurationUI")
         ConfigurationUI.resize(290, 601)
@@ -129,7 +131,14 @@ class Ui_ConfigurationUI(object):
         QtCore.QMetaObject.connectSlotsByName(ConfigurationUI)
 
         # Initialize callbacks and events
-        self.openBtn.clicked.connect(self.initSerial)
+        self.openBtn.clicked.connect(self.openPort)
+        self.closeBtn.clicked.connect(self.closePort)
+        if Ui_ConfigurationUI.state:
+            self.openBtn.setEnabled(False)
+            self.closeBtn.setEnabled(True)
+        else:
+            self.openBtn.setEnabled(True)
+            self.closeBtn.setEnabled(False)
 
     def retranslateUi(self, ConfigurationUI):
         _translate = QtCore.QCoreApplication.translate
@@ -173,10 +182,8 @@ class Ui_ConfigurationUI(object):
         self.openBtn.setText(_translate("ConfigurationUI", "Open "))
         self.closeBtn.setText(_translate("ConfigurationUI", "Close "))
 
-
     def initSerial(self):
-        global ser
-        ser = serial.Serial()
+        self.ser = serial.Serial()
         # data pre-processing
         port = self.nameCb.currentText()
         baudrate = int(self.baudCb.currentText())
@@ -197,13 +204,44 @@ class Ui_ConfigurationUI(object):
             handshake = True
         
         # serial communication init
-        ser.port = port
-        ser.baudrate = baudrate
-        ser.bytesize = bytesize
-        ser.parity = parity
-        ser.rtscts = handshake
-        ser.open()
+        self.ser.port = port
+        self.ser.baudrate = baudrate
+        self.ser.bytesize = bytesize
+        self.ser.parity = parity
+        self.ser.rtscts = handshake
+        print(self.ser)
 
+    def openPort(self):
+        self.initSerial()
+        self.ser.open()
+        if self.ser.isOpen() ==  True:
+            message = self.ser.port + ' is opened'
+            self.createMessageBox(message)
+        self.openBtn.setEnabled(False)
+        self.closeBtn.setEnabled(True)
+        if Ui_ConfigurationUI.state is not True:
+            Ui_ConfigurationUI.state = True
+
+    def closePort(self):
+        self.initSerial()
+        if self.ser.isOpen() == True:
+            self.ser.close()
+            message = self.ser.port + ' is closed'
+            self.createMessageBox(message)
+        Ui_ConfigurationUI.state = False
+        self.openBtn.setEnabled(True)
+        self.closeBtn.setEnabled(False)
+
+    def createMessageBox(self, message):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setMinimumSize(QtCore.QSize(300, 200))
+        msg.setText(message)
+        msg.setWindowTitle("Information")
+        msg.exec_()
+        
+    def closeEvent(self):
+        print(Ui_ConfigurationUI.state)
 
 
 if __name__ == "__main__":
@@ -212,6 +250,9 @@ if __name__ == "__main__":
     ConfigurationUI = QtWidgets.QMainWindow()
     ui = Ui_ConfigurationUI()
     ui.setupUi(ConfigurationUI)
+    # App about to quit event
+    # app.aboutToQuit.connect(ui.closeGui)
+    ######################################################################
     ConfigurationUI.show()
     sys.exit(app.exec_())
 
