@@ -16,7 +16,10 @@ import time
 class Ui_MainControllerUI(object):
     state = False
     event = threading.Event()
-        
+    
+    def __init__(self, *args, **kwargs):
+        super(Ui_MainControllerUI, self).__init__(*args, **kwargs)
+
     def setupUi(self, MainControllerUI):
         MainControllerUI.setObjectName("MainControllerUI")
         MainControllerUI.resize(1196, 592)
@@ -302,16 +305,16 @@ class Ui_MainControllerUI(object):
         QtCore.QMetaObject.connectSlotsByName(MainControllerUI)
 
         if Ui_MainControllerUI.state:
-            self.sttLbl.setText('True')
+            self.sttLbl.setText('Open')
         else:
-            self.sttLbl.setText('False')
+            self.sttLbl.setText('Close')
         # Initialize callbacks and events
         ## For Screens
-        self.teachingCamBtn.clicked.connect(self.openWindow)
+        self.teachingCamBtn.clicked.connect(self.openCamTeaching)
         self.configBtn.clicked.connect(self.openCongiguration)
         ## End Screens
         # End initialize callbacks and events
-        self.armHomeBtn.clicked.connect(self.armHomimg)
+        
 
 
     def retranslateUi(self, MainControllerUI):
@@ -343,9 +346,11 @@ class Ui_MainControllerUI(object):
         self.liveVidGB.setTitle(_translate("MainControllerUI", "Live Cam"))
 
 
-    '''
-    Custom event: state change -> read the state of application to dynamically change UI
-    '''
+    ########################################################################################
+    #                                                                                      #
+    # Custom event: state change -> read the state of application to dynamically change UI #
+    #                                                                                      #
+    ########################################################################################
     # Set State -> set new state
     def SetState(self, value):
         self.oldState = self.state
@@ -357,32 +362,51 @@ class Ui_MainControllerUI(object):
     def StateChange(self):
         self.event.wait()
         if self.oldState is not self.state:
-            print('State change -> Update UI')
-               
+            self.Update_UI()
         else:
-            print('State not changed -> Not update UI')
+            pass
         self.event.clear()
 
-    # Open main window( cam teaching window)
-    def openWindow(self):
+    # Update UI
+    def Update_UI(self):
+        if self.state:
+            self.sttLbl.setText('Open')
+            self.sttLbl.setStyleSheet("border-style: none; color: green; font-weight: 400")
+        else:
+            self.sttLbl.setText('Close')
+            self.sttLbl.setStyleSheet("border-style: none; color: red; font-weight: 400")
+
+    ########################################################################################
+    #                                                                                      #
+    # Cam Teaching Window                                                                  #
+    #                                                                                      #
+    ########################################################################################
+
+    '''Open main window( cam teaching window)'''
+    def openCamTeaching(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
 
-    def closeEvent(self):
-        Ui_MainControllerUI.state = Ui_ConfigurationUI.state
+    ########################################################################################
+    #                                                                                      #
+    # Configuraion Window UI and its callback                                              #
+    #                                                                                      #
+    ########################################################################################
 
-    # Open Configuration Ui
+    '''Custom close event ***very important '''
+    def closeEvent(self, *arg):
+        self.SetState(Ui_ConfigurationUI.state)
+        
+    ''' Open Configuration Ui '''
     def openCongiguration(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_ConfigurationUI()
         self.ui.setupUi(self.window)
-        self.window.closeEvent = Ui_MainControllerUI.closeEvent
+        self.window.closeEvent = self.closeEvent
         self.window.show()
-        
-    def armHomimg(self):
-        self.SetState(not self.state)
+
 
 if __name__ == "__main__":
     import sys

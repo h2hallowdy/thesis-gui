@@ -209,7 +209,7 @@ class Ui_ConfigurationUI(object):
         self.ser.bytesize = bytesize
         self.ser.parity = parity
         self.ser.rtscts = handshake
-        print(self.ser)
+        
 
     def openPort(self):
         self.initSerial()
@@ -240,7 +240,7 @@ class Ui_ConfigurationUI(object):
         msg.setWindowTitle("Information")
         msg.exec_()
         
-    def closeEvent(self):
+    def closeGui(self):
         print(Ui_ConfigurationUI.state)
 
 
