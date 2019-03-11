@@ -183,7 +183,7 @@ class Ui_ConfigurationUI(object):
         self.closeBtn.setText(_translate("ConfigurationUI", "Close "))
 
     def initSerial(self):
-        self.ser = serial.Serial()
+        Ui_ConfigurationUI.ser = serial.Serial()
         # data pre-processing
         port = self.nameCb.currentText()
         baudrate = int(self.baudCb.currentText())
@@ -204,18 +204,18 @@ class Ui_ConfigurationUI(object):
             handshake = True
         
         # serial communication init
-        self.ser.port = port
-        self.ser.baudrate = baudrate
-        self.ser.bytesize = bytesize
-        self.ser.parity = parity
-        self.ser.rtscts = handshake
+        Ui_ConfigurationUI.ser.port = port
+        Ui_ConfigurationUI.ser.baudrate = baudrate
+        Ui_ConfigurationUI.ser.bytesize = bytesize
+        Ui_ConfigurationUI.ser.parity = parity
+        Ui_ConfigurationUI.ser.rtscts = handshake
         
 
     def openPort(self):
         self.initSerial()
-        self.ser.open()
-        if self.ser.isOpen() ==  True:
-            message = self.ser.port + ' is opened'
+        Ui_ConfigurationUI.ser.open()
+        if Ui_ConfigurationUI.ser.isOpen() ==  True:
+            message = Ui_ConfigurationUI.ser.port + ' is opened'
             self.createMessageBox(message)
         self.openBtn.setEnabled(False)
         self.closeBtn.setEnabled(True)
@@ -224,9 +224,9 @@ class Ui_ConfigurationUI(object):
 
     def closePort(self):
         self.initSerial()
-        if self.ser.isOpen() == True:
-            self.ser.close()
-            message = self.ser.port + ' is closed'
+        if Ui_ConfigurationUI.ser.isOpen() == True:
+            Ui_ConfigurationUI.ser.close()
+            message = Ui_ConfigurationUI.ser.port + ' is closed'
             self.createMessageBox(message)
         Ui_ConfigurationUI.state = False
         self.openBtn.setEnabled(True)

@@ -11,12 +11,15 @@ from main import Ui_MainWindow
 from Configuration import Ui_ConfigurationUI
 import threading
 import time
+import serial
 
 
 class Ui_MainControllerUI(object):
     state = False
     event = threading.Event()
-    
+    ser = serial.Serial()
+    # ser = serial.Serial()
+    # ser.port = "COM1"
     def __init__(self, *args, **kwargs):
         super(Ui_MainControllerUI, self).__init__(*args, **kwargs)
 
@@ -372,6 +375,10 @@ class Ui_MainControllerUI(object):
         if self.state:
             self.sttLbl.setText('Open')
             self.sttLbl.setStyleSheet("border-style: none; color: green; font-weight: 400")
+            # for debugging
+            # temp = 'Connected'
+            # temp_bytes = bytes(temp, 'utf-8')
+            # self.ser.write(temp_bytes)  
         else:
             self.sttLbl.setText('Close')
             self.sttLbl.setStyleSheet("border-style: none; color: red; font-weight: 400")
@@ -397,7 +404,9 @@ class Ui_MainControllerUI(object):
 
     '''Custom close event ***very important '''
     def closeEvent(self, *arg):
+        self.ser = Ui_ConfigurationUI.ser
         self.SetState(Ui_ConfigurationUI.state)
+        
         
     ''' Open Configuration Ui '''
     def openCongiguration(self):
