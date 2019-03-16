@@ -18,6 +18,8 @@ import array
 class Ui_MainControllerUI(object):
     state = False
     event = threading.Event()
+    # running = threading.Event()
+    # running.set()
     ser = serial.Serial()
     # ser = serial.Serial()
     # ser.port = "COM1"
@@ -312,6 +314,10 @@ class Ui_MainControllerUI(object):
             self.sttLbl.setText('Open')
         else:
             self.sttLbl.setText('Close')
+
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.read_data)
+        self.timer.start(300)
         # Initialize callbacks and events
         ## For Screens
         self.teachingCamBtn.clicked.connect(self.openCamTeaching)
@@ -319,6 +325,7 @@ class Ui_MainControllerUI(object):
         ## End Screens
         # End initialize callbacks and events
         self.armHomeBtn.clicked.connect(self.homeArmSend)
+        self.camHomeBtn.clicked.connect(self.read_data)
         
 
 
@@ -429,9 +436,9 @@ class Ui_MainControllerUI(object):
             title = 'Error'
             self.createMessageBox(message, title, 'error')
         else: 
-            message = 'home'
-            byteMessage = bytes(message)
-            self.ser.write(byteMessage)
+            message = b"[home, shit]"
+            # byteMessage = bytes(message, encoding='utf-8')
+            self.ser.write(message)
     ########################################################################################
     #                                                                                      #
     # Create Message box                                                                   #
@@ -449,6 +456,29 @@ class Ui_MainControllerUI(object):
         msg.setWindowTitle(title)
         msg.exec_()
 
+
+    
+    def read_data(self):
+        if self.state == True:
+            buf = self.ser.read(self.ser.inWaiting())
+            if b'[' in buf and b']' in buf:
+                start = buf.find(b'[')
+                buf = buf[start + 1:]
+                end = buf.find(b']')
+                message = buf[:end].decode('utf-8')
+            else:
+                message = ''
+        else:
+            buf = 0
+            message = ''
+        if message != '':
+            arrayCoordinates = message.split(',')
+            self.xCurLbl.setText(arrayCoordinates[0])
+            self.yCurLbl.setText(arrayCoordinates[1])
+            self.zCurLbl.setText(arrayCoordinates[2])
+        self.timer.setInterval(300)
+        # return buf
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -456,5 +486,6 @@ if __name__ == "__main__":
     ui = Ui_MainControllerUI()
     ui.setupUi(MainControllerUI)
     MainControllerUI.show()
+    
     sys.exit(app.exec_())
 
