@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import time
 import serial
 
 
@@ -226,6 +226,7 @@ class Ui_ConfigurationUI(object):
         self.initSerial()
         if Ui_ConfigurationUI.ser.isOpen() == True:
             Ui_ConfigurationUI.ser.close()
+            time.sleep(0.5)
             message = Ui_ConfigurationUI.ser.port + ' is closed'
             self.createMessageBox(message)
         Ui_ConfigurationUI.state = False

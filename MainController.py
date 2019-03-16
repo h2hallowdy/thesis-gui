@@ -12,6 +12,7 @@ from Configuration import Ui_ConfigurationUI
 import threading
 import time
 import serial
+import array
 
 
 class Ui_MainControllerUI(object):
@@ -317,6 +318,7 @@ class Ui_MainControllerUI(object):
         self.configBtn.clicked.connect(self.openCongiguration)
         ## End Screens
         # End initialize callbacks and events
+        self.armHomeBtn.clicked.connect(self.homeArmSend)
         
 
 
@@ -376,9 +378,13 @@ class Ui_MainControllerUI(object):
             self.sttLbl.setText('Open')
             self.sttLbl.setStyleSheet("border-style: none; color: green; font-weight: 400")
             # for debugging
-            # temp = 'Connected'
-            # temp_bytes = bytes(temp, 'utf-8')
-            # self.ser.write(temp_bytes)  
+            temp = 'connected \n'
+            # temp_numb = [1, 2, 3]
+            # temp_numb_bytes = bytearray(temp_numb)
+            temp_bytes = bytes(temp, encoding='utf-8')
+            # tmp = array.array('B', [0x00, 0x01, 0x02]).tostring()
+            # self.ser.write(tmp)
+            self.ser.write(temp_bytes)
         else:
             self.sttLbl.setText('Close')
             self.sttLbl.setStyleSheet("border-style: none; color: red; font-weight: 400")
@@ -416,6 +422,32 @@ class Ui_MainControllerUI(object):
         self.window.closeEvent = self.closeEvent
         self.window.show()
 
+    ''' Arm homing button '''
+    def homeArmSend(self):
+        if self.state == False:
+            message = 'Error Connection. Please check ports.'
+            title = 'Error'
+            self.createMessageBox(message, title, 'error')
+        else: 
+            message = 'home'
+            byteMessage = bytes(message)
+            self.ser.write(byteMessage)
+    ########################################################################################
+    #                                                                                      #
+    # Create Message box                                                                   #
+    #                                                                                      #
+    ########################################################################################
+
+    def createMessageBox(self, message, title, style):
+        msg = QtWidgets.QMessageBox()
+        if style == 'infor':
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+        elif style == 'error':
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setMinimumSize(QtCore.QSize(300, 200))
+        msg.setText(message)
+        msg.setWindowTitle(title)
+        msg.exec_()
 
 if __name__ == "__main__":
     import sys
