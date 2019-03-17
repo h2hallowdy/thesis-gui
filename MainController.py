@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from main import Ui_MainWindow
 from Configuration import Ui_ConfigurationUI
 import threading
+import numpy as np
 import time
 import serial
 import array
@@ -18,13 +19,16 @@ import array
 class Ui_MainControllerUI(object):
     state = False
     event = threading.Event()
+    stateLiveView = False
     # running = threading.Event()
     # running.set()
     ser = serial.Serial()
     # ser = serial.Serial()
     # ser.port = "COM1"
-    def __init__(self, *args, **kwargs):
-        super(Ui_MainControllerUI, self).__init__(*args, **kwargs)
+    def __init__(self, camera=None):
+        super(Ui_MainControllerUI, self).__init__()
+        self.camera = camera
+        
 
     def setupUi(self, MainControllerUI):
         MainControllerUI.setObjectName("MainControllerUI")
@@ -257,19 +261,19 @@ class Ui_MainControllerUI(object):
             "border-radius: 4px;\n"
             "border-color: black;")
         self.autoBtn.setObjectName("autoBtn")
-        self.armTestingBtn_2 = QtWidgets.QPushButton(self.controlGB)
-        self.armTestingBtn_2.setGeometry(QtCore.QRect(250, 20, 111, 31))
+        self.manualBtn = QtWidgets.QPushButton(self.controlGB)
+        self.manualBtn.setGeometry(QtCore.QRect(250, 20, 111, 31))
         font = QtGui.QFont()
         font.setFamily("Material-Design-Iconic-Font")
         font.setPointSize(11)
-        self.armTestingBtn_2.setFont(font)
-        self.armTestingBtn_2.setStyleSheet(
+        self.manualBtn.setFont(font)
+        self.manualBtn.setStyleSheet(
             "background-color: rgb(255, 85, 0);\n"
             "border-style: outset;\n"
             "border-width: 1px;\n"
             "border-radius: 4px;\n"
             "border-color: black;")
-        self.armTestingBtn_2.setObjectName("armTestingBtn_2")
+        self.manualBtn.setObjectName("manualBtn")
         self.processGB = QtWidgets.QGroupBox(self.centralwidget)
         self.processGB.setGeometry(QtCore.QRect(730, 360, 461, 191))
         font = QtGui.QFont()
@@ -326,6 +330,7 @@ class Ui_MainControllerUI(object):
         # End initialize callbacks and events
         self.armHomeBtn.clicked.connect(self.homeArmSend)
         self.camHomeBtn.clicked.connect(self.read_data)
+        self.armTestingBtn.clicked.connect(self.enableCam)
         
 
 
@@ -341,7 +346,7 @@ class Ui_MainControllerUI(object):
         self.armHomeBtn.setText(_translate("MainControllerUI", "Arm Homing "))
         self.camHomeBtn.setText(_translate("MainControllerUI", "Cam Homing "))
         self.teachingCamBtn.setText(_translate("MainControllerUI", "Cam teaching "))
-        self.armTestingBtn.setText(_translate("MainControllerUI", "Arm Teaching"))
+        self.armTestingBtn.setText(_translate("MainControllerUI", "Live View"))
         self.armPosGB.setTitle(_translate("MainControllerUI", "Arm Position"))
         self.label.setText(_translate("MainControllerUI", "X Position:"))
         self.label_3.setText(_translate("MainControllerUI", "Y Position:"))
@@ -353,7 +358,7 @@ class Ui_MainControllerUI(object):
         self.yProLbl.setText(_translate("MainControllerUI", "TextLabel"))
         self.controlGB.setTitle(_translate("MainControllerUI", "Control"))
         self.autoBtn.setText(_translate("MainControllerUI", "Auto"))
-        self.armTestingBtn_2.setText(_translate("MainControllerUI", "Manual"))
+        self.manualBtn.setText(_translate("MainControllerUI", "Manual"))
         self.processGB.setTitle(_translate("MainControllerUI", "Process"))
         self.liveVidGB.setTitle(_translate("MainControllerUI", "Live Cam"))
 
@@ -479,11 +484,54 @@ class Ui_MainControllerUI(object):
         self.timer.setInterval(300)
         # return buf
 
+
+    ########################################################################################
+    #                                                                                      #
+    # For camera displaying                                                                #
+    #                                                                                      #
+    ########################################################################################
+    def enableCam(self):
+        self.stateLiveView = not self.stateLiveView
+        if self.stateLiveView == True:
+            self.armTestingBtn.setStyleSheet("background-color: rgb(0, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
+            self.camera.initialize()
+            self.updateTimer = QtCore.QTimer()
+            self.updateTimer.timeout.connect(self.update_Image)
+            self.updateTimer.start(1)
+        else:
+            self.armTestingBtn.setStyleSheet("background-color: rgb(255, 255, 0);\n"
+            "border-style: outset;\n"
+            "border-width: 1px;\n"
+            "border-radius: 4px;\n"
+            "border-color: black;")
+            self.camera.close_camera()
+            self.updateTimer.stop()
+        
+    def update_Image(self):
+        frame = self.camera.get_frame()
+        height, width, channel = frame.shape
+        bytesPerLine = 3 * width
+        qImg = QtGui.QImage(frame.data, width, height, bytesPerLine, QtGui.QImage.Format_RGB888).rgbSwapped()
+        qPixMap = QtGui.QPixmap(qImg)
+        qPixMap = qPixMap.scaled(self.liveVidFrame.width(), self.liveVidFrame.height(),QtCore.Qt.KeepAspectRatio)
+        self.liveVidFrame.setPixmap(qPixMap)
+        self.updateTimer.setInterval(5)
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainControllerUI = QtWidgets.QMainWindow()
-    ui = Ui_MainControllerUI()
+    # import file from another dir
+    sys.path.insert(0, './Models/')
+    from Camera import Camera
+    camera = Camera(0)
+    
+    # import file from another dir
+    ui = Ui_MainControllerUI(camera)
     ui.setupUi(MainControllerUI)
     MainControllerUI.show()
     
