@@ -33,7 +33,7 @@ class Camera:
         return 'OpenCV Camera {}'.format(self.cam_num)
 
 if __name__ == '__main__':
-    cam = Camera(0)
+    cam = Camera(1)
     cam.initialize()
     print(cam)
     frame = cam.get_frame()
