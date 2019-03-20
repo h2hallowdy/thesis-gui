@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtOpenGL
 from main import Ui_MainWindow
 from Configuration import Ui_ConfigurationUI
 import threading
@@ -519,7 +519,7 @@ class Ui_MainControllerUI(object):
         qPixMap = QtGui.QPixmap(qImg)
         qPixMap = qPixMap.scaled(self.liveVidFrame.width(), self.liveVidFrame.height(),QtCore.Qt.KeepAspectRatio)
         self.liveVidFrame.setPixmap(qPixMap)
-        self.updateTimer.setInterval(5)
+        self.updateTimer.setInterval(4)
 
 if __name__ == "__main__":
     import sys
@@ -528,7 +528,7 @@ if __name__ == "__main__":
     # import file from another dir
     sys.path.insert(0, './Models/')
     from Camera import Camera
-    camera = Camera(0)
+    camera = Camera(1)
     
     # import file from another dir
     ui = Ui_MainControllerUI(camera)
