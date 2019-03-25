@@ -529,7 +529,6 @@ if __name__ == "__main__":
     sys.path.insert(0, './Models/')
     from Camera import Camera
     camera = Camera(1)
-    
     # import file from another dir
     ui = Ui_MainControllerUI(camera)
     ui.setupUi(MainControllerUI)
