@@ -21,6 +21,7 @@ class Ui_ManualMode(object):
     def setupUi(self, ManualMode):
         ManualMode.setObjectName("ManualMode")
         ManualMode.resize(409, 223)
+        ManualMode.setWindowIcon(QtGui.QIcon('./icons/test.png'))
         self.firstMGB = QtWidgets.QGroupBox(ManualMode)
         self.firstMGB.setGeometry(QtCore.QRect(10, 10, 191, 61))
         self.firstMGB.setObjectName("firstMGB")
@@ -106,7 +107,7 @@ class Ui_ManualMode(object):
         else:
             motor4Angle = '0'
         message = "M1" + motor1Angle + "," + "M2" + motor2Angle + "," + "M3" + motor3Angle + "," + "M4" + motor4Angle
-        message_bytes = bytes(message, encoding='utf-8')
+        message_bytes = bytes(message + '\n', encoding='utf-8')
         self.ser.write(message_bytes)
         logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
         t_log = GetTime()

@@ -42,3 +42,6 @@ Tools:            Python, pyqt, qtDesigner
 
 ## UI in Configuration GUI
     confiGB: Configuration Group box -> nameCb, baudCb, dataSizeCb, parityCb, handshakeCb, modeCb, openBtn, closeBtn
+
+## UI in ManualMode GUI
+    Send angles of motors to test them. :)
