@@ -344,6 +344,7 @@ class Ui_MainControllerUI(object):
         self.camHomeBtn.clicked.connect(self.read_data)
         self.armTestingBtn.clicked.connect(self.enableCam)
         self.manualBtn.clicked.connect(self.manualMode)
+        self.autoBtn.clicked.connect(self.autoMode)
         
 
 
@@ -463,7 +464,7 @@ class Ui_MainControllerUI(object):
             t_log = GetTime()
             logging.error(t_log + ': Error connection.')
         else: 
-            message = b"h"
+            message = b"h\n"
             # byteMessage = bytes(message, encoding='utf-8')
             self.ser.write(message)
             logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
@@ -550,6 +551,14 @@ class Ui_MainControllerUI(object):
         qPixMap = QtGui.QPixmap(qImg)
         qPixMap = qPixMap.scaled(self.liveVidFrame.width(), self.liveVidFrame.height(),QtCore.Qt.KeepAspectRatio)
         self.liveVidFrame.setPixmap(qPixMap)
+        pointX = 2
+        pointY = 3
+        self.xProLbl.setText(str(pointX))
+        self.yProLbl.setText(str(pointY))
+        if self.state == True:
+            message = '(' + str(pointX) + ',' + str(pointY) + ')\n'
+            message_bytes = bytes(message, encoding='utf-8')
+            self.ser.write(message_bytes)
         self.updateTimer.setInterval(4)
 
     ########################################################################################
@@ -569,9 +578,9 @@ class Ui_MainControllerUI(object):
             t_log = GetTime()
             logging.error(t_log + ': Error connection.')
         else: 
-            message = b"m"
-            # byteMessage = bytes(message, encoding='utf-8')
-            self.ser.write(message)
+            # message = b"m"
+            # # byteMessage = bytes(message, encoding='utf-8')
+            # self.ser.write(message)
             logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
             t_log = GetTime()
             logging.info(t_log + ': Enter Manual Mode successful.')
@@ -585,7 +594,31 @@ class Ui_MainControllerUI(object):
         t_log = GetTime()
         logging.info(t_log + ': Exit manual Mode.')
 
-        
+    ########################################################################################
+    #                                                                                      #
+    # Auto Mode                                                                            #
+    #                                                                                      #
+    ########################################################################################
+    def autoMode(self):
+        logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+        t_log = GetTime()
+        logging.info(t_log + ': Enter auto Mode.')
+        if self.state == False:
+            message = 'Error Connection. Please check ports.'
+            title = 'Error'
+            self.createMessageBox(message, title, 'error')
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.ERROR)
+            t_log = GetTime()
+            logging.error(t_log + ': Error connection.')
+        else: 
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': Enter Auto Mode successful.')
+            self.createMessageBox('Camera Auto Enabled!', 'Information', 'infor')
+            self.ser.write(b'a\n')
+            time.sleep(4)
+            self.enableCam()
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
