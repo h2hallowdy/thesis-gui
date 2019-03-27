@@ -9,11 +9,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, QtOpenGL
 from main import Ui_MainWindow
 from Configuration import Ui_ConfigurationUI
+from ManualMode import Ui_ManualMode
+from time_util import *
 import threading
 import numpy as np
 import time
 import serial
 import array
+import logging
+from datetime import datetime
+
+# logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+# logging.debug('This message should go to the log file')
 
 
 class Ui_MainControllerUI(object):
@@ -28,6 +35,11 @@ class Ui_MainControllerUI(object):
     def __init__(self, camera=None):
         super(Ui_MainControllerUI, self).__init__()
         self.camera = camera
+        t_filename = GetTimeForFile()
+        self.FILE_LOG = 'logs/' + t_filename + '.log'
+        logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+        t_log = GetTime()
+        logging.info(t_log + ': Initialize the software...Connected')
         
 
     def setupUi(self, MainControllerUI):
@@ -331,6 +343,7 @@ class Ui_MainControllerUI(object):
         self.armHomeBtn.clicked.connect(self.homeArmSend)
         self.camHomeBtn.clicked.connect(self.read_data)
         self.armTestingBtn.clicked.connect(self.enableCam)
+        self.manualBtn.clicked.connect(self.manualMode)
         
 
 
@@ -397,9 +410,15 @@ class Ui_MainControllerUI(object):
             # tmp = array.array('B', [0x00, 0x01, 0x02]).tostring()
             # self.ser.write(tmp)
             self.ser.write(temp_bytes)
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': UART Connected.' + ' Port name: ' + self.ser.port)
         else:
             self.sttLbl.setText('Close')
             self.sttLbl.setStyleSheet("border-style: none; color: red; font-weight: 400")
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': UART Connection Closed.')
 
     ########################################################################################
     #                                                                                      #
@@ -440,10 +459,16 @@ class Ui_MainControllerUI(object):
             message = 'Error Connection. Please check ports.'
             title = 'Error'
             self.createMessageBox(message, title, 'error')
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.ERROR)
+            t_log = GetTime()
+            logging.error(t_log + ': Error connection.')
         else: 
-            message = b"[home, shit]"
+            message = b"h"
             # byteMessage = bytes(message, encoding='utf-8')
             self.ser.write(message)
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': Arm Homing.')
     ########################################################################################
     #                                                                                      #
     # Create Message box                                                                   #
@@ -493,6 +518,9 @@ class Ui_MainControllerUI(object):
     def enableCam(self):
         self.stateLiveView = not self.stateLiveView
         if self.stateLiveView == True:
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': Live View Enabled.')
             self.armTestingBtn.setStyleSheet("background-color: rgb(0, 255, 0);\n"
             "border-style: outset;\n"
             "border-width: 1px;\n"
@@ -503,6 +531,9 @@ class Ui_MainControllerUI(object):
             self.updateTimer.timeout.connect(self.update_Image)
             self.updateTimer.start(1)
         else:
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': Live View Disabled.')
             self.armTestingBtn.setStyleSheet("background-color: rgb(255, 255, 0);\n"
             "border-style: outset;\n"
             "border-width: 1px;\n"
@@ -521,6 +552,40 @@ class Ui_MainControllerUI(object):
         self.liveVidFrame.setPixmap(qPixMap)
         self.updateTimer.setInterval(4)
 
+    ########################################################################################
+    #                                                                                      #
+    # Manual Mode                                                                          #
+    #                                                                                      #
+    ########################################################################################
+    def manualMode(self):
+        logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+        t_log = GetTime()
+        logging.info(t_log + ': Enter manual Mode.')
+        if self.state == False:
+            message = 'Error Connection. Please check ports.'
+            title = 'Error'
+            self.createMessageBox(message, title, 'error')
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.ERROR)
+            t_log = GetTime()
+            logging.error(t_log + ': Error connection.')
+        else: 
+            message = b"m"
+            # byteMessage = bytes(message, encoding='utf-8')
+            self.ser.write(message)
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': Enter Manual Mode successful.')
+            self.widget = QtWidgets.QWidget()
+            self.ui = Ui_ManualMode(self.ser, self.FILE_LOG)
+            self.ui.setupUi(self.widget)
+            self.widget.closeEvent = self.closeManualMode
+            self.widget.show()
+    def closeManualMode(self, *args):
+        logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+        t_log = GetTime()
+        logging.info(t_log + ': Exit manual Mode.')
+
+        
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -528,7 +593,7 @@ if __name__ == "__main__":
     # import file from another dir
     sys.path.insert(0, './Models/')
     from Camera import Camera
-    camera = Camera(1)
+    camera = Camera(0)
     # import file from another dir
     ui = Ui_MainControllerUI(camera)
     ui.setupUi(MainControllerUI)
