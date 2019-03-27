@@ -11,6 +11,8 @@ class Camera:
 
     def get_frame(self):
         ret, self.last_frame = self.cap.read()
+        cv2.putText(self.last_frame, 'haha', (60, 50),
+			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         return self.last_frame
 
     def acquire_movie(self, num_frames):
