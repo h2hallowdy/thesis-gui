@@ -154,7 +154,7 @@ class Ui_ConfigurationUI(object):
         self.nameCb.setItemText(6, _translate("ConfigurationUI", "COM7"))
         self.nameCb.setItemText(7, _translate("ConfigurationUI", "COM8"))
         self.nameCb.setItemText(8, _translate("ConfigurationUI", "COM9"))
-        self.nameCb.setItemText(9, _translate("ConfigurationUI", "COM10"))
+        self.nameCb.setItemText(9, _translate("ConfigurationUI", "COM11"))
         self.label_2.setText(_translate("ConfigurationUI", "Baud"))
         self.baudCb.setCurrentText(_translate("ConfigurationUI", "9600"))
         self.baudCb.setItemText(0, _translate("ConfigurationUI", "9600"))

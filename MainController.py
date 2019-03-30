@@ -27,6 +27,7 @@ class Ui_MainControllerUI(object):
     state = False
     event = threading.Event()
     stateLiveView = False
+    stateAutoMode = False
     # running = threading.Event()
     # running.set()
     ser = serial.Serial()
@@ -410,7 +411,7 @@ class Ui_MainControllerUI(object):
             temp_bytes = bytes(temp, encoding='utf-8')
             # tmp = array.array('B', [0x00, 0x01, 0x02]).tostring()
             # self.ser.write(tmp)
-            self.ser.write(temp_bytes)
+            # self.ser.write(temp_bytes)
             logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
             t_log = GetTime()
             logging.info(t_log + ': UART Connected.' + ' Port name: ' + self.ser.port)
@@ -464,7 +465,7 @@ class Ui_MainControllerUI(object):
             t_log = GetTime()
             logging.error(t_log + ': Error connection.')
         else: 
-            message = b"h\n"
+            message = b"h000000000"
             # byteMessage = bytes(message, encoding='utf-8')
             self.ser.write(message)
             logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
@@ -600,24 +601,31 @@ class Ui_MainControllerUI(object):
     #                                                                                      #
     ########################################################################################
     def autoMode(self):
-        logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
-        t_log = GetTime()
-        logging.info(t_log + ': Enter auto Mode.')
-        if self.state == False:
-            message = 'Error Connection. Please check ports.'
-            title = 'Error'
-            self.createMessageBox(message, title, 'error')
-            logging.basicConfig(filename=self.FILE_LOG, level=logging.ERROR)
-            t_log = GetTime()
-            logging.error(t_log + ': Error connection.')
-        else: 
+        self.stateAutoMode = not self.stateAutoMode
+        if self.stateAutoMode == True:
             logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
             t_log = GetTime()
-            logging.info(t_log + ': Enter Auto Mode successful.')
-            self.createMessageBox('Camera Auto Enabled!', 'Information', 'infor')
-            self.ser.write(b'a\n')
-            time.sleep(4)
-            self.enableCam()
+            logging.info(t_log + ': Enter auto Mode.')
+            if self.state == False:
+                message = 'Error Connection. Please check ports.'
+                title = 'Error'
+                self.createMessageBox(message, title, 'error')
+                logging.basicConfig(filename=self.FILE_LOG, level=logging.ERROR)
+                t_log = GetTime()
+                logging.error(t_log + ': Error connection.')
+                self.stateAutoMode = False
+            else: 
+                logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+                t_log = GetTime()
+                logging.info(t_log + ': Enter Auto Mode successful.')
+                self.createMessageBox('Camera Auto Enabled!', 'Information', 'infor')
+                self.ser.write(b'a\n')
+                time.sleep(4)
+                self.enableCam()
+        else:
+            logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
+            t_log = GetTime()
+            logging.info(t_log + ': Exit auto Mode.')       
 
 if __name__ == "__main__":
     import sys
