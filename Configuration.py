@@ -209,6 +209,7 @@ class Ui_ConfigurationUI(object):
         Ui_ConfigurationUI.ser.bytesize = bytesize
         Ui_ConfigurationUI.ser.parity = parity
         Ui_ConfigurationUI.ser.rtscts = handshake
+        print(Ui_ConfigurationUI.ser)
         
 
     def openPort(self):
@@ -223,10 +224,10 @@ class Ui_ConfigurationUI(object):
             Ui_ConfigurationUI.state = True
 
     def closePort(self):
+        print(Ui_ConfigurationUI.ser)
         self.initSerial()
         if Ui_ConfigurationUI.ser.isOpen() == True:
             Ui_ConfigurationUI.ser.close()
-            time.sleep(0.5)
             message = Ui_ConfigurationUI.ser.port + ' is closed'
             self.createMessageBox(message)
         Ui_ConfigurationUI.state = False

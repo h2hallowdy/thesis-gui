@@ -91,24 +91,44 @@ class Ui_ManualMode(object):
 
     def SendTestMotor(self):
         if self.firstMEdit.text() != "":
-            motor1Angle = self.firstMEdit.text()
+            if '-' in self.firstMEdit.text():
+                num = self.firstMEdit.text().split('-')[1]
+                num = '{:03d}'.format(int(num))
+                motor1Angle = '0' + num
+            else:
+                motor1Angle = '1' + '{:03d}'.format(int(self.firstMEdit.text()))
         else:
-            motor1Angle = "0"
+            motor1Angle = '0000'
         if self.secMEdit.text() != '':
-            motor2Angle = self.secMEdit.text()
+            if '-' in self.secMEdit.text():
+                num = self.secMEdit.text().split('-')[1]
+                num = '{:03d}'.format(int(num))
+                motor2Angle = '0' + num
+            else:
+                motor2Angle = '1' + '{:03d}'.format(int(self.secMEdit.text()))
         else:
-            motor2Angle = '0'
+            motor2Angle = '0000'
         if self.thirdMEdit.text() != '':
-            motor3Angle = self.thirdMEdit.text()
+            if '-' in self.thirdMEdit.text():
+                num = self.thirdMEdit.text().split('-')[1]
+                num = '{:03d}'.format(int(num))
+                motor3Angle = '0' + num
+            else:
+                motor3Angle = '1' + '{:03d}'.format(int(self.thirdMEdit.text()))
         else:
-            motor3Angle = '0'
+            motor3Angle = '0000'
         if self.fourMEdit.text() != '':
-            motor4Angle = self.fourMEdit.text()
+            if '-' in self.fourMEdit.text():
+                num = self.fourMEdit.text().split('-')[1]
+                num = '{:03d}'.format(int(num))
+                motor4Angle = '0' + num
+            else:
+                motor4Angle = '1' + '{:03d}'.format(int(self.fourMEdit.text()))
         else:
-            motor4Angle = '0'
-        #TODO: please change the message
-        # message = "M1" + motor1Angle + "," + "M2" + motor2Angle + "," + "M3" + motor3Angle + "," + "M4" + motor4Angle
-        message = 't1-154-184'
+            motor4Angle = '0000'
+        
+        message = 't' + '-' + motor1Angle + '-' + motor2Angle + '-' + motor3Angle + '-' + motor4Angle
+        # message = 't1-154-184'
         message_bytes = bytes(message , encoding='utf-8')
         self.ser.write(message_bytes)
         logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)

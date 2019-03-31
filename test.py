@@ -58,15 +58,6 @@
 # f.write_text(model_structure)
 # # Save neural network's trained weights
 # model.sample_weights('model_weights.h5')
-
-import cv2
-
-cap = cv2.VideoCapture(1)
-while True:
-    ret, img = cap.read()
-    cv2.imshow('img', img)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+string  = '-10'
+a = string.split('-')
+print(a)
