@@ -58,6 +58,6 @@
 # f.write_text(model_structure)
 # # Save neural network's trained weights
 # model.sample_weights('model_weights.h5')
-string  = '-10'
-a = string.split('-')
-print(a)
+import cv2
+
+a = cv2.imread('')

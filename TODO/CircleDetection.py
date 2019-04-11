@@ -19,23 +19,23 @@ class CircleDetection():
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         gray = cv2.medianBlur(gray, self.kernel)
         rows = gray.shape[0]
-        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,
-                               param1=50, param2=30,
-                               minRadius=20, maxRadius=30)
-        
+        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 20,
+                               param1=30, param2=5,
+                               minRadius=10, maxRadius=30)
+        print(circles)
         if circles is not None:
             circles = np.uint16(np.around(circles))
             for i in circles[0, :]:
                 center = (i[0], i[1])
                 self.centers.append(center)
                 # circle center
-                cv2.circle(self.img, center, 1, (0, 100, 100), 2)
-                # circle outline
-                radius = i[2]
-                cv2.circle(self.img, center, radius, (255, 0, 255), 1)
-                cv2.putText(self.img, str(center[1]), (center[0] + 10, center[1] + 10),
-			            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)    
-        return self.img
+                # cv2.circle(self.img, center, 1, (0, 100, 100), 2)
+                # # circle outline
+                # radius = i[2]
+                # cv2.circle(self.img, center, radius, (255, 0, 255), 1)
+                # cv2.putText(self.img, str(center[1]), (center[0] + 10, center[1] + 10),
+			    #         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)    
+            return self.centers
     
     def AngleDetection(self):
         x = []
@@ -60,16 +60,37 @@ class CircleDetection():
 
 if __name__ == '__main__':
     
-    capture = cv2.VideoCapture(0)
-    capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    capture.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    while True:
-        ret, frame = capture.read()
-        frame = cv2.resize(frame, (640, 360))
-        cv2.imshow('haha', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            cv2.imwrite('frame.png', frame)
-            break
+    # capture = cv2.VideoCapture(0)
+    # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    # while True:
+    #     ret, frame = capture.read()
+    #     frame = cv2.resize(frame, (640, 360))
+    #     cv2.imshow('haha', frame)
+    #     if cv2.waitKey(1) & 0xFF == ord('q'):
+    #         cv2.imwrite('frame.png', frame)
+    #         break
 
-    capture.release()
-    cv2.destroyAllWindows()
+    # capture.release()
+    # cv2.destroyAllWindows()
+    image = cv2.imread('frame_center.png')
+    
+    boundaries = [
+        ([17, 15, 100], [50, 56, 255])
+    ]
+    for (lower, upper) in boundaries:
+	# create NumPy arrays from the boundaries
+        lower = np.array(lower, dtype = "uint8")
+        upper = np.array(upper, dtype = "uint8")
+
+        # find the colors within the specified boundaries and apply
+        # the mask
+        mask = cv2.inRange(image, lower, upper)
+        output = cv2.bitwise_and(image, image, mask = mask)
+        cd = CircleDetection(output)
+        cens = cd.ProcessCircle()
+        print(cens)
+        # show the images
+        # cv2.imshow("images", np.hstack([image, cropGray]))
+        cv2.imshow('output', output)
+        cv2.waitKey(0)

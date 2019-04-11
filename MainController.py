@@ -465,7 +465,7 @@ class Ui_MainControllerUI(object):
             t_log = GetTime()
             logging.error(t_log + ': Error connection.')
         else: 
-            message = b"h000000000"
+            message = b"h00000000000000000000"
             # byteMessage = bytes(message, encoding='utf-8')
             self.ser.write(message)
             logging.basicConfig(filename=self.FILE_LOG, level=logging.INFO)
