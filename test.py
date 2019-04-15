@@ -59,5 +59,6 @@
 # # Save neural network's trained weights
 # model.sample_weights('model_weights.h5')
 import cv2
-
-a = cv2.imread('')
+import numpy as np
+a = np.ndarray(shape=(1, 2))
+print(a[0][1])

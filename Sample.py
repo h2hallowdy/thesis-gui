@@ -5,8 +5,8 @@ path = 'D:/Sample'
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-img_counter = 0
-max_counter = 100
+img_counter = 900
+max_counter = 1000
 while True:
     ret, img = cap.read()
     if not ret:

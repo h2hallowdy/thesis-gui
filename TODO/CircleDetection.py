@@ -73,24 +73,53 @@ if __name__ == '__main__':
 
     # capture.release()
     # cv2.destroyAllWindows()
-    image = cv2.imread('frame_center.png')
+    # image = cv2.imread('frame_center_real.jpg')
     
-    boundaries = [
-        ([17, 15, 100], [50, 56, 255])
-    ]
-    for (lower, upper) in boundaries:
-	# create NumPy arrays from the boundaries
-        lower = np.array(lower, dtype = "uint8")
-        upper = np.array(upper, dtype = "uint8")
+    # boundaries = [
+    #     # ([17, 15, 100], [50, 56, 255]) # for red channel
+    #     ([90, 15, 17], [150, 56, 50]) # for blue channel
+    #     # ([0, 0, 0], [50, 56, 70])
+    # ]
+    # for (lower, upper) in boundaries:
+	# # create NumPy arrays from the boundaries
+    #     lower = np.array(lower, dtype = "uint8")
+    #     upper = np.array(upper, dtype = "uint8")
 
-        # find the colors within the specified boundaries and apply
-        # the mask
-        mask = cv2.inRange(image, lower, upper)
-        output = cv2.bitwise_and(image, image, mask = mask)
-        cd = CircleDetection(output)
-        cens = cd.ProcessCircle()
-        print(cens)
-        # show the images
-        # cv2.imshow("images", np.hstack([image, cropGray]))
-        cv2.imshow('output', output)
-        cv2.waitKey(0)
+    #     # find the colors within the specified boundaries and apply
+    #     # the mask
+    #     mask = cv2.inRange(image, lower, upper)
+    #     output = cv2.bitwise_and(image, image, mask = mask)
+    #     cd = CircleDetection(output)
+    #     cens = cd.ProcessCircle()
+    #     print(cens)
+    #     # show the images
+    #     # cv2.imshow("images", np.hstack([image, cropGray]))
+    #     cv2.imshow('output', output)
+    #     cv2.waitKey(0)
+    
+    b = cv2.imread('crop_1.jpg')
+    hsv = cv2.cvtColor(b, cv2.COLOR_BGR2HSV)
+    c = b.copy()
+    cg = cv2.cvtColor(c, cv2.COLOR_BGR2GRAY)
+    th = cv2.adaptiveThreshold(cg, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2)
+    median = cv2.medianBlur(th, 7)
+    median = 255 - median
+    _, contours, _ = cv2.findContours(median, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    c = max(contours, key = cv2.contourArea)
+    rect = cv2.minAreaRect(c)
+    box = cv2.boxPoints(rect)
+    box = np.int0(box)
+    cv2.drawContours(b, [box],0,(0,0,255),1)
+    cv2.imshow('thresh', b)
+    # # set green and red channels to 0
+    # c[:, :, 1] = 0
+    # c[:, :, 2] = 0
+    # cg = cv2.cvtColor(c, cv2.COLOR_BGR2GRAY)
+    lower_blue = np.array([110,50,50])
+    upper_blue = np.array([130,255,255])
+    mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    res = cv2.bitwise_and(b,b, mask= mask)
+    n = cv2.cvtColor(res, cv2.COLOR_HSV2BGR)
+    resg = cv2.cvtColor(n, cv2.COLOR_BGR2GRAY)
+    # cv2.imshow('gray', resg)
+    cv2.waitKey(0)
