@@ -29,7 +29,7 @@ for fname in images:
 
         corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
         imgpoints.append(corners2)
-
+        print(corners2)                
         # Draw and display the corners
         img = cv2.drawChessboardCorners(img, (9,6), corners2,ret)
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
@@ -40,7 +40,7 @@ for fname in images:
         print(rvecs)
         print('---------------------')
         print(tvecs)
-        np.savez('B.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+        np.savez('B.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs, corners=corners2)
         cv2.imshow('img',img)
         cv2.waitKey(0)
         break
